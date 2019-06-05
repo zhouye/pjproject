@@ -2329,6 +2329,22 @@ pj_status_t pjsua_media_channel_create_sdp(pjsua_call_id call_id,
     }
 #endif
 
+#if 1
+    if (rem_sdp) {
+	/* If this is a re-offer, let's re-initialize media as remote may
+	 * add or remove media
+	 */
+	if (call->inv && call->inv->state == PJSIP_INV_STATE_EARLY) {
+	    status = pjsua_media_channel_init(call_id, PJSIP_ROLE_UAS,
+					      call->secure_level, pool,
+					      rem_sdp, sip_err_code,
+                                              PJ_FALSE, NULL);
+	    if (status != PJ_SUCCESS)
+		return status;
+	}
+    }
+#endif
+
     /* Get SDP negotiator state */
     if (call->inv && call->inv->neg)
 	sdp_neg_state = pjmedia_sdp_neg_get_state(call->inv->neg);

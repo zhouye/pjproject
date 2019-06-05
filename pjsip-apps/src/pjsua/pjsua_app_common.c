@@ -170,6 +170,44 @@ void log_call_dump(int call_id)
     pj_log_set_decor(log_decor);
 }
 
+
+
+dtmf_inband_data *call_init_tonegen(pjsua_call_id call_id)
+{
+    pj_pool_t *pool;
+    dtmf_inband_data *cd;
+    pjsua_call_info ci;
+
+    pool = pjsua_pool_create("dtmf_tonegen", 512, 512);
+    cd = PJ_POOL_ZALLOC_T(pool, dtmf_inband_data);
+    cd->pool = pool;
+
+    pjmedia_tonegen_create(cd->pool, 8000, 1, 160, 16, 0, &cd->tonegen);
+    pjsua_conf_add_port(cd->pool, cd->tonegen, &cd->toneslot);
+
+    pjsua_call_get_info(call_id, &ci);
+    pjsua_conf_connect(cd->toneslot, ci.conf_slot);
+
+    pjsua_call_set_user_data(call_id, (void*) cd);
+
+    return cd;
+}
+
+void call_deinit_tonegen(pjsua_call_id call_id)
+{
+    dtmf_inband_data *cd;
+
+    cd = (dtmf_inband_data*) pjsua_call_get_user_data(call_id);
+    if (!cd)
+	return;
+
+    pjsua_conf_remove_port(cd->toneslot);
+    pjmedia_port_destroy(cd->tonegen);
+    pj_pool_release(cd->pool);
+
+    pjsua_call_set_user_data(call_id, NULL);
+}
+
 #ifdef PJSUA_HAS_VIDEO
 void app_config_init_video(pjsua_acc_config *acc_cfg)
 {

@@ -238,7 +238,7 @@ static void keystroke_help()
     puts("|  x  Xfer call                |      Media Commands:     |  Status & Config: |");
     puts("|  X  Xfer with Replaces       |                          |                   |");
     puts("|  #  Send RFC 2833 DTMF       | cl  List ports           |  d  Dump status   |");
-    puts("|  *  Send DTMF with INFO      | cc  Connect port         | dd  Dump detailed |");
+    puts("|  *  Send Inband DTMF         | cc  Connect port         | dd  Dump detailed |");
     puts("| dq  Dump curr. call quality  | cd  Disconnect port      | dc  Dump config   |");
     puts("|                              |  V  Adjust audio Volume  |  f  Save config   |");
     puts("|  S  Send arbitrary REQUEST   | Cp  Codec priorities     |                   |");
@@ -1271,6 +1271,53 @@ static void ui_send_dtmf_info()
     }
 }
 
+void call_play_digit(pjsua_call_id call_id, const char *digits)
+{
+    pjmedia_tone_digit d[128];
+    unsigned i, count = strlen(digits);
+    dtmf_inband_data *cd;
+
+    cd = (dtmf_inband_data*) pjsua_call_get_user_data(call_id);
+    if (!cd)
+	cd = call_init_tonegen(call_id);
+
+    if (count > PJ_ARRAY_SIZE(d))
+	count = PJ_ARRAY_SIZE(d);
+
+    pj_bzero(d, sizeof(d));
+    for (i=0; i<count; ++i) {
+	d[i].digit = digits[i];
+	d[i].on_msec = 100;
+	d[i].off_msec = 200;
+	d[i].volume = 0;
+    }
+
+    pjmedia_tonegen_play_digits(cd->tonegen, count, d, 0);
+}
+
+static void ui_send_dtmf_inband()
+{
+    if (current_call == -1) {
+	PJ_LOG(3,(THIS_FILE, "No current call"));
+    } else {
+	int call = current_call;
+	pj_status_t status;
+	char buf[128];
+
+	if (!simple_input("DTMF strings to send (0-9*#A-B)", buf,
+	    sizeof(buf)))
+	{
+	    return;
+	}
+
+	if (call != current_call) {
+	    puts("Call has been disconnected");
+	    return;
+	}
+        call_play_digit(call, buf);
+    }
+}
+
 static void ui_send_arbitrary_request()
 {
     char text[128];
@@ -1841,7 +1888,9 @@ void legacy_main()
 
 	case '*':
 	    /* Send DTMF with INFO */
-	    ui_send_dtmf_info();
+	    // ui_send_dtmf_info();
+	    /* Replaced with send Inband DTMF */
+	    ui_send_dtmf_inband();
 	    break;
 
 	case 'S':

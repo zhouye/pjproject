@@ -213,6 +213,8 @@ static void on_call_state(pjsua_call_id call_id, pjsip_event *e)
 	    log_call_dump(call_id);
 	}
 
+	call_deinit_tonegen(call_id);
+
     } else {
 
 	if (app_config.duration != PJSUA_APP_NO_LIMIT_DURATION && 

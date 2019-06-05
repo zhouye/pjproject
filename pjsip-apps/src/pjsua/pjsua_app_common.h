@@ -203,6 +203,15 @@ void cli_get_info(char *info, pj_size_t size);
 /** Legacy method **/
 void legacy_main();
 
+typedef struct dtmf_inband_data
+{
+    pj_pool_t          *pool;
+    pjmedia_port       *tonegen;
+    pjsua_conf_port_id  toneslot;
+} dtmf_inband_data;
+dtmf_inband_data *call_init_tonegen(pjsua_call_id call_id);
+void call_deinit_tonegen(pjsua_call_id call_id);
+
 #if PJSUA_HAS_VIDEO
 void vid_print_dev(int id, const pjmedia_vid_dev_info *vdi, const char *title);
 void vid_list_devs();

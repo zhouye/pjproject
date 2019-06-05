@@ -1543,7 +1543,7 @@ static pj_status_t app_init()
 	    goto on_error;
 
 	/* Add local account */
-	pjsua_acc_add_local(transport_id, PJ_TRUE, &aid);
+	// pjsua_acc_add_local(transport_id, PJ_TRUE, &aid);
 
 	/* Adjust local account config based on pjsua app config */
 	{
@@ -1587,7 +1587,7 @@ static pj_status_t app_init()
 	    goto on_error;
 
 	/* Add local account */
-	pjsua_acc_add_local(transport_id, PJ_TRUE, &aid);
+	// pjsua_acc_add_local(transport_id, PJ_TRUE, &aid);
 
 	/* Adjust local account config based on pjsua app config */
 	{
@@ -1622,7 +1622,7 @@ static pj_status_t app_init()
 	    goto on_error;
 
 	/* Add local account */
-	pjsua_acc_add_local(transport_id, PJ_TRUE, &aid);
+	// pjsua_acc_add_local(transport_id, PJ_TRUE, &aid);
 
 	/* Adjust local account config based on pjsua app config */
 	{
@@ -1652,7 +1652,7 @@ static pj_status_t app_init()
 	    goto on_error;
 
 	/* Add local account */
-	pjsua_acc_add_local(transport_id, PJ_TRUE, &aid);
+	// pjsua_acc_add_local(transport_id, PJ_TRUE, &aid);
 
 	/* Adjust local account config based on pjsua app config */
 	{
